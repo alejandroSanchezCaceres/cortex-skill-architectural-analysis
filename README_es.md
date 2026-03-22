@@ -190,3 +190,8 @@ sequenceDiagram
 Ejemplo de interfaces generadas para el sistema.
 
 ![Prototipo de Pantallas](examples/prototipo_pantallas.png)
+
+## Autor
+
+- **Autor**: Alejandro Sánchez C.
+- **Contacto**: [alejandro.sanchez.caceres@gmail.com](mailto:alejandro.sanchez.caceres@gmail.com) / [Linktr.ee](https://linktr.ee/alejandro.sanchez.caceres)
