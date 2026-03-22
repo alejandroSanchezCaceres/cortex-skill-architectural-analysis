@@ -1,0 +1,24 @@
+sequenceDiagram
+    actor Operador as Personal
+    participant Orch as Cortex Orchestrator
+    participant Rep as Reporting Agent
+    participant Gemini as Gemini API
+    participant Audit as AuditLog
+
+    Note over Operador,Audit: ── FLUJO FELIZ (P06 — Generación de reporte de incidente) ──
+
+    Operador->>Orch: "Genera el reporte del incidente de WebLogic-Prod-07"
+    Note right of Orch: Supervisor recupera contexto de la sesión actual
+    Orch->>Rep: task("generar reporte de incidente", contexto_sesion)
+    Rep->>Audit: get_session_actions(thread_id)
+    Audit-->>Rep: [{tool: "get_server_logs", result: ...}, {tool: "get_server_status", result: ...}]
+    Rep->>Gemini: generate_report(acciones + diagnostico + plantilla_reporte, model=flash)
+    Gemini-->>Rep: reporte_estructurado
+    Note right of Rep: Estructura: resumen · timeline · diagnóstico · lecciones aprendidas
+    Rep-->>Orch: {reporte: reporte_estructurado, formato: "markdown"}
+    Orch->>Audit: log_action("generate_report", actor=Operador, resultado=ok)
+    Orch-->>Operador: Reporte completo del incidente
+
+    Note over Operador,Audit: ── RUTA ALTERNATIVA — Sin sesión activa de diagnóstico ──
+    Operador->>Orch: "Genera reporte" (sin diagnóstico previo en sesión)
+    Orch-->>Operador: "No encontré diagnóstico en la sesión actual. ¿Deseas iniciar uno primero?"

@@ -1,103 +1,187 @@
 # Cortex Skill: Architectural Analysis
 
-Este skill genera un análisis funcional y arquitectónico completo para propuestas a clientes a partir de un documento de requerimientos o conversación. Está diseñado para transformar necesidades de negocio en artefactos técnicos y ejecutivos de alta calidad, siguiendo un flujo secuencial estricto.
+This skill generates a complete functional and architectural analysis for client proposals from a requirement document or conversation. It is designed to transform business needs into high-quality technical and executive artifacts, following a strict sequential flow. It has been tested with claude.ai / claudde code. The generation of artifacts such as HTML infographics will depend on the capabilities of each agent.
 
-## Estructura del Proyecto
+[Spanish version available here](README_es.md)
+
+## Project Structure
 
 ```text
 .
-├── .gitignore                          # Configuración de archivos ignorados
-├── README.md                           # Documentación principal del proyecto
-└── cortex-skill-architectural-analysis/ # Directorio raíz del skill
-    ├── SKILL.md                        # Definición y lógica del skill
-    └── references/                     # Plantillas y guías de referencia
+├── .gitignore                          # Configuration for ignored files
+├── README.md                           # Main project documentation (English)
+├── README_es.md                        # Project documentation (Spanish)
+└── cortex-skill-architectural-analysis/ # Skill root directory
+    ├── SKILL.md                        # Skill definition and logic
+    └── references/                     # Templates and reference guides
 ```
 
-## Arquitectura del Skill
+## Skill Architecture
 
-### Arquitectura Conceptual
+### Conceptual Architecture
 
-El skill opera bajo un modelo de **bloques secuenciales** con compuertas de aprobación (*gates*). Cada bloque genera un conjunto de artefactos que sirven de insumo para el siguiente.
+The skill operates under a **sequential blocks** model with approval gates (*gates*). Each block generates a set of artifacts that serve as input for the next one.
 
 ```mermaid
 graph TD
-    P0[Paso 0: Cuestionario de Contexto] --> |Aprobación| BA[Bloque A: Diagnóstico y Contexto]
-    BA --> |Aprobación| BB[Bloque B: Narrativa Ejecutiva]
-    BB --> |Aprobación| BC[Bloque C: Detalle Técnico]
+    P0[Step 0: Context Questionnaire] --> |Approval| BA[Block A: Diagnosis and Context]
+    BA --> |Approval| BB[Block B: Executive Narrative]
+    BB --> |Approval| BC[Block C: Technical Detail]
     
-    subgraph "Bloque A (Interno/Cliente)"
-        A1[A1: Resumen Ejecutivo]
-        A2[A2: RNFs]
-        A3[A3: Mapa de Procesos]
+    subgraph "Block A (Internal/Client)"
+        A1[A1: Executive Summary]
+        A2[A2: NFRs]
+        A3[A3: Process Map]
     end
     
-    subgraph "Bloque B (Ejecutivo)"
-        A4[A4: Infografía]
-        A5[A5: Arquitectura Conceptual]
+    subgraph "Block B (Executive)"
+        A4[A4: Infographic]
+        A5[A5: Conceptual Architecture]
     end
     
-    subgraph "Bloque C (Técnico)"
-        A6[A6: Arq. Contextual]
-        A7[A7: Secuencias Atómicas]
-        A8[A8: Prototipos HTML]
-        A9[A9: Riesgos]
+    subgraph "Block C (Technical)"
+        A6[A6: Contextual Arq.]
+        A7[A7: Atomic Sequences]
+        A8[A8: HTML Prototypes]
+        A9[A9: Risks]
         A10[A10: ADRs]
         A11[A11: OpEx]
-        A12[A12: Equipo]
+        A12[A12: Team]
         A13[A13: Sprints]
         A14[A14: RACI]
     end
 ```
 
-### Diagrama de Secuencia de Operación
+### Operation Sequence Diagram
 
-El flujo de interacción entre el usuario y el skill garantiza que no haya sobreingeniería y que los artefactos sean consistentes.
+The interaction flow between the user and the skill ensures there is no over-engineering and that artifacts are consistent.
 
 ```mermaid
 sequenceDiagram
-    participant U as Usuario
-    participant S as Cortex Skill (Arquitecto)
+    participant U as User
+    participant S as Cortex Skill (Architect)
     
-    U->>S: Proporciona Requerimiento / RFP
-    S->>S: Activa Paso 0 (Gate Obligatorio)
-    S->>U: Presenta Cuestionario de Contexto
-    U->>S: Confirma Respuesta / Ajusta Stack
+    U->>S: Provides Requirement / RFP
+    S->>S: Activates Step 0 (Mandatory Gate)
+    S->>U: Presents Context Questionnaire
+    U->>S: Confirms Response / Adjusts Stack
     
     Rect rgb(240, 240, 240)
-        Note over S, U: BLOQUE A: Diagnóstico
-        S->>U: Genera A1-A3 con micro-checkpoints
-        U->>S: Aprueba Bloque A (Checkpoint A)
+        Note over S, U: BLOCK A: Diagnosis
+        S->>U: Generates A1-A3 with micro-checkpoints
+        U->>S: Approves Block A (Checkpoint A)
     End
     
     Rect rgb(220, 240, 220)
-        Note over S, U: BLOQUE B: Narrativa
-        S->>U: Genera A4-A5 (Visuales/Estratégicos)
-        U->>S: Aprueba Bloque B (Checkpoint B)
+        Note over S, U: BLOCK B: Narrative
+        S->>U: Generates A4-A5 (Visuals/Strategic)
+        U->>S: Approves Block B (Checkpoint B)
     End
     
     Rect rgb(200, 220, 255)
-        Note over S, U: BLOQUE C: Detalle Técnico
-        S->>U: Activa PDA (Protocolo de Decisiones)
-        U->>S: Confirma Decisiones Técnicas
-        S->>U: Genera A6-A14 (Especificación Técnica)
+        Note over S, U: BLOCK C: Technical Detail
+        S->>U: Activates PDA (Decision Protocol)
+        U->>S: Confirms Technical Decisions
+        S->>U: Generates A6-A14 (Technical Specification)
     End
     
-    S->>U: Entrega Empaquetado Final (.md, .html, .mmd)
+    S->>U: Final Packaged Delivery (.md, .html, .mmd)
 ```
 
-## Características Principales
+## Main Features
 
-- **Propagación de Contexto**: El stack tecnológico y los nombres de componentes definidos inicialmente se mantienen idénticos en todos los artefactos.
-- **Protocolo de Decisiones Arquitectónicas (PDA)**: Antes de definir arquitectura técnica, se consultan trade-offs de cómputo, datos e integración.
-- **Atomicidad en Secuencias**: Los diagramas de secuencia se dividen en flujos mínimos verificables.
-- **Prototipado Derivado**: Las pantallas de UI se generan directamente de los pasos de los diagramas de secuencia.
+- **Context Propagation**: The technological stack and component names defined initially remain identical across all artifacts.
+- **Architectural Decision Protocol (PDA)**: Before defining technical architecture, compute, data, and integration trade-offs are consulted.
+- **Sequence Atomicity**: Sequence diagrams are divided into minimum verifiable flows.
+- **Derived Prototyping**: UI screens are generated directly from the steps of the sequence diagrams.
 
-## Uso del Skill
+## Skill Usage
 
-Para activar el skill, simplemente carga un documento de requerimientos o describe tu sistema. El skill responderá iniciando el **Paso 0** para capturar el contexto tecnológico base (Nube, Backend, Frontend, etc.).
+To activate the skill, simply load a requirements document or describe your system. The skill will respond by starting **Step 0** to capture the base technological context (Cloud, Backend, Frontend, etc.).
 
-> **Importante**: No se avanzará a la generación de artefactos hasta que el Paso 0 sea confirmado explícitamente.
+> **Important**: No artifacts will be generated until Step 0 is explicitly confirmed.
 
-## Guía de Diseño (Design System)
+## Design Guide (Design System)
 
-Todos los artefactos HTML generados siguen un sistema de diseño premium, con paletas claras y tipografía moderna, asegurando una presentación profesional para el cliente final. Reportarse a `references/design-system.md` para más detalles.
+All generated HTML artifacts follow a premium design system, with clear palettes and modern typography, ensuring a professional presentation for the final client. Refer to `references/design-system.md` for more details.
+
+## Artifact Examples
+
+Below are examples of some of the artifacts that this skill is capable of generating as part of an architectural analysis of a requirement.
+
+### 1. Contextual Architecture
+This diagram shows the interaction of the system with external actors and internal layers.
+
+![Contextual Architecture](examples/arquitectura_conceptual.png)
+
+### 2. Problem and Solution Infographic
+Executive visualization of client challenges and the value proposition.
+
+![Problem and Solution Infographic](examples/problema_solucion_inforgrafia.png)
+
+### 3. Atomic Sequence Diagrams
+Examples of detailed flows for diagnosis and reporting.
+
+#### Reactive Diagnosis Detail
+```mermaid
+sequenceDiagram
+    actor Operator as Support Staff
+    participant Orch as Cortex Orchestrator
+    participant Diag as Diagnostic Agent
+    participant Know as Knowledge Agent
+    participant OraDB as Oracle Autonomous DB AI
+    participant Gemini as Gemini API
+
+    Note over Operator,Gemini: ── HAPPY PATH (P03 — Reactive incident diagnosis) ──
+    Note right of Operator: P95 < 5s end-to-end (Latency NFR)
+
+    Operator->>Orch: "Fault in WebLogic-Prod-07. AdminServer not responding"
+    Note right of Orch: Supervisor detects intent: incident diagnosis
+    Orch->>Diag: task("diagnose AdminServer WebLogic-Prod-07")
+    Diag->>OraDB: get_server_status("WebLogic-Prod-07")
+    OraDB-->>Diag: {status: "degraded", cpu: 98%, heap: 95%, threads: "stuck"}
+    Diag->>OraDB: get_server_logs("WebLogic-Prod-07", last=100)
+    OraDB-->>Diag: [log_entries with OutOfMemoryError and stuck threads]
+    Diag->>Know: task("search OutOfMemoryError WebLogic stuck threads")
+    Know->>OraDB: vector_search("OutOfMemoryError WebLogic AdminServer")
+    OraDB-->>Know: [{runbook: "wl_oom_remediation.md", score: 0.91}]
+    Know-->>Diag: runbook_context
+    Diag->>Gemini: analyze(logs + status + runbook, model=pro)
+    Gemini-->>Diag: {root_cause: "Heap exhaustion due to thread leak", remediation: [...]}
+    Diag-->>Orch: structured_diagnosis
+    Orch-->>Operator: Diagnosis + root cause + suggested remediation steps
+    Note right of Orch: AuditLog records all tool calls
+```
+
+#### Report Generation
+```mermaid
+sequenceDiagram
+    actor Operator as Support Staff
+    participant Orch as Cortex Orchestrator
+    participant Rep as Reporting Agent
+    participant Gemini as Gemini API
+    participant Audit as AuditLog
+
+    Note over Operator,Audit: ── HAPPY PATH (P06 — Incident report generation) ──
+
+    Operator->>Orch: "Generate the report for the WebLogic-Prod-07 incident"
+    Note right of Orch: Supervisor retrieves current session context
+    Orch->>Rep: task("generate incident report", session_context)
+    Rep->>Audit: get_session_actions(thread_id)
+    Audit-->>Rep: [{tool: "get_server_logs", result: ...}, {tool: "get_server_status", result: ...}]
+    Rep->>Gemini: generate_report(acciones + diagnosis + report_template, model=flash)
+    Gemini-->>Rep: structured_report
+    Note right of Rep: Structure: summary · timeline · diagnosis · lessons learned
+    Rep-->>Orch: {report: structured_report, format: "markdown"}
+    Orch->>Audit: log_action("generate_report", actor=Operator, result=ok)
+    Orch-->>Operator: Full incident report
+
+    Note over Operator,Audit: ── ALTERNATIVE ROUTE — No active diagnosis session ──
+    Operator->>Orch: "Generate report" (no previous diagnosis in session)
+    Orch-->>Operator: "I didn't find a diagnosis in the current session. Do you want to start one first?"
+```
+
+### 4. UI Prototypes
+Example of generated interfaces for the system.
+
+![UI Prototypes](examples/prototipo_pantallas.png)

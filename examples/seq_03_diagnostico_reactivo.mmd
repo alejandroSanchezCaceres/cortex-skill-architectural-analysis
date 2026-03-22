@@ -1,0 +1,27 @@
+sequenceDiagram
+    actor Operador as Personal
+    participant Orch as Cortex Orchestrator
+    participant Diag as Diagnostic Agent
+    participant Know as Knowledge Agent
+    participant OraDB as Oracle Autonomous DB AI
+    participant Gemini as Gemini API
+
+    Note over Operador,Gemini: ── FLUJO FELIZ (P03 — Diagnóstico reactivo de incidente) ──
+    Note right of Operador: P95 < 5s extremo a extremo (RNF Latencia)
+
+    Operador->>Orch: "Falla en WebLogic-Prod-07. AdminServer no responde"
+    Note right of Orch: Supervisor detecta intención: diagnóstico de incidente
+    Orch->>Diag: task("diagnosticar AdminServer WebLogic-Prod-07")
+    Diag->>OraDB: get_server_status("WebLogic-Prod-07")
+    OraDB-->>Diag: {status: "degraded", cpu: 98%, heap: 95%, threads: "stuck"}
+    Diag->>OraDB: get_server_logs("WebLogic-Prod-07", last=100)
+    OraDB-->>Diag: [log_entries con OutOfMemoryError y stuck threads]
+    Diag->>Know: task("buscar OutOfMemoryError WebLogic stuck threads")
+    Know->>OraDB: vector_search("OutOfMemoryError WebLogic AdminServer")
+    OraDB-->>Know: [{runbook: "wl_oom_remediation.md", score: 0.91}]
+    Know-->>Diag: contexto_runbook
+    Diag->>Gemini: analyze(logs + status + runbook, model=pro)
+    Gemini-->>Diag: {causa_raiz: "Heap exhaustion por thread leak", remediacion: [...]}
+    Diag-->>Orch: diagnostico_estructurado
+    Orch-->>Operador: Diagnóstico + causa raíz + pasos de remediación sugeridos
+    Note right of Orch: AuditLog registra todas las tool calls
