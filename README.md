@@ -109,10 +109,15 @@ All generated HTML artifacts follow a premium design system, with clear palettes
 
 Below are examples of some of the artifacts that this skill is capable of generating as part of an architectural analysis of a requirement.
 
-### 1. Contextual Architecture
+### 1. Conceptual Architecture
 This diagram shows the interaction of the system with external actors and internal layers.
 
 ![Contextual Architecture](examples/arquitectura_conceptual.png)
+
+### 1.2 Contextual Architecture
+This diagram shows the relationships between the components of the system.
+
+![Contextual Architecture](examples/arquitectura_contextual.png)
 
 ### 2. Problem and Solution Infographic
 Executive visualization of client challenges and the value proposition.

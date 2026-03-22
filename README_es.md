@@ -109,11 +109,15 @@ Todos los artefactos HTML generados siguen un sistema de diseño premium, con pa
 
 A continuación se presentan ejemplos de algunos de los artefactos que este skill es capaz de generar como parte de un análisis arquitectónico de un requerimiento.
 
-### 1. Arquitectura Contextual
+### 1. Arquitectura Conceptual
 Este diagrama muestra la interacción del sistema con actores externos y capas internas.
 
 ![Arquitectura Contextual](examples/arquitectura_conceptual.png)
 
+### 1.2 Arquitectura Contextual
+Este diagrama muestra la relación entre los componentes del sistema.
+
+![Arquitectura Contextual](examples/arquitectura_contextual.png)
 
 ### 2. Infografía de Problema y Solución
 Visualización ejecutiva de los desafíos del cliente y la propuesta de valor.
