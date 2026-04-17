@@ -1,6 +1,8 @@
-# Cortex Skill: Architectural Analysis
+# Cortex Skill: Architectural Analysis — v2
 
-This skill generates a complete functional and architectural analysis for client proposals from a requirement document or conversation. It is designed to transform business needs into high-quality technical and executive artifacts, following a strict sequential flow. It has been tested with claude.ai / claudde code. The generation of artifacts such as HTML infographics will depend on the capabilities of each agent.
+This skill generates a complete functional and architectural analysis for client proposals from a requirement document or conversation. It is designed to transform business needs into high-quality technical and executive artifacts, following a strict sequential flow. Tested with claude.ai / Claude Code. The generation of artifacts such as HTML infographics will depend on the capabilities of each agent.
+
+**v2 adds:** A15 — Physical Data Model (generated between A6 and A7) and A16 — User Stories (generated at the end of Block C). Total: **16 artifacts · 16 micro-checkpoints · 2 block gates · 1 initial gate.**
 
 [Spanish version available here](README_es.md)
 
@@ -41,6 +43,7 @@ graph TD
     
     subgraph "Block C (Technical)"
         A6[A6: Contextual Arq.]
+        A15[A15: Physical Data Model]
         A7[A7: Atomic Sequences]
         A8[A8: HTML Prototypes]
         A9[A9: Risks]
@@ -49,6 +52,9 @@ graph TD
         A12[A12: Team]
         A13[A13: Sprints]
         A14[A14: RACI]
+        A16[A16: User Stories]
+        A6 --> A15 --> A7
+        A14 --> A16
     end
 ```
 
@@ -82,7 +88,9 @@ sequenceDiagram
         Note over S, U: BLOCK C: Technical Detail
         S->>U: Activates PDA (Decision Protocol)
         U->>S: Confirms Technical Decisions
-        S->>U: Generates A6-A14 (Technical Specification)
+        S->>U: Activates PDA — resolves architectural decisions one by one
+        U->>S: Confirms each decision
+        S->>U: Generates A6 → A15 → A7 → A8 → A9 → A10 → A11 → A12 → A13 → A14 → A16
     End
     
     S->>U: Final Packaged Delivery (.md, .html, .mmd)
@@ -90,10 +98,12 @@ sequenceDiagram
 
 ## Main Features
 
-- **Context Propagation**: The technological stack and component names defined initially remain identical across all artifacts.
-- **Architectural Decision Protocol (PDA)**: Before defining technical architecture, compute, data, and integration trade-offs are consulted.
-- **Sequence Atomicity**: Sequence diagrams are divided into minimum verifiable flows.
-- **Derived Prototyping**: UI screens are generated directly from the steps of the sequence diagrams.
+- **Context Propagation**: The technological stack and component names defined initially remain identical across all 16 artifacts.
+- **Architectural Decision Protocol (PDA)**: Before defining technical architecture, compute, data, and integration trade-offs are presented with costs and a recommendation — no decision is recorded until the user confirms.
+- **Physical Data Model (A15)**: Executable DDL + ER diagram generated before the sequence diagrams so that table names are real throughout Block C.
+- **Sequence Atomicity**: Sequence diagrams are divided into minimum verifiable flows (max 6 participants, max 15 steps each).
+- **Derived Prototyping**: UI screens are generated directly from the steps of the sequence diagrams, referencing real column names from A15.
+- **User Stories (A16)**: Full backlog grouped in epics, with Dado/Cuando/Entonces acceptance criteria, mapped to A3 processes, A7 sequences, A8 screens, and A13 sprints.
 
 ## Skill Usage
 

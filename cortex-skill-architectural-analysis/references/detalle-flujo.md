@@ -207,3 +207,162 @@ Antes de finalizar el Artefacto 6, valida cada decisión:
 - [ ] ¿Es necesaria esta capa de caché en el MVP o puede agregarse después?
 
 Si alguna respuesta es "no" o "todavía no", simplifica la arquitectura y documenta el camino de escalabilidad como nota.
+
+---
+
+## Artefacto 15 — Plantilla de Modelo de Datos Físico
+
+```markdown
+# [Nombre del Proyecto] — Modelo de Datos Físico
+
+> **Motor:** [BD del Paso 0, ej. Oracle ATP 26ai / PostgreSQL 16 / MySQL 8]
+> **Decisión arquitectónica de referencia:** ADR-XXX (modelo de persistencia del A10)
+> **Versión:** 1.0
+
+## Principios de diseño
+- [Principio 1: derivado de los ADRs del A10 y los supuestos del A1]
+- [Principio 2: idempotencia, inmutabilidad, retención, etc.]
+- [Mínimo 5 principios trazables a artefactos previos]
+
+## Diagrama Entidad-Relación
+
+\`\`\`mermaid
+erDiagram
+  ENTIDAD_A ||--o{ ENTIDAD_B : relacion
+  ENTIDAD_A {
+    TIPO campo PK
+    TIPO campo
+  }
+  ENTIDAD_B {
+    TIPO campo PK
+    TIPO campo FK
+  }
+\`\`\`
+
+## DDL completo
+
+### Tabla `nombre_tabla`
+
+\`\`\`sql
+CREATE TABLE nombre_tabla (
+  campo_pk    TIPO        NOT NULL,
+  campo_fk    TIPO,
+  campo_dato  TIPO        NOT NULL,
+  created_at  TIMESTAMP   DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  CONSTRAINT pk_nombre_tabla PRIMARY KEY (campo_pk),
+  CONSTRAINT fk_nombre_tabla_otra FOREIGN KEY (campo_fk) REFERENCES otra_tabla(id),
+  CONSTRAINT ck_nombre_tabla_estado CHECK (estado IN ('VALOR1','VALOR2'))
+);
+
+COMMENT ON TABLE nombre_tabla IS 'Descripción funcional de la tabla.';
+COMMENT ON COLUMN nombre_tabla.campo_pk IS 'Descripción del campo.';
+
+CREATE INDEX ix_nombre_tabla_campo ON nombre_tabla (campo);
+\`\`\`
+
+[Repetir por cada tabla del modelo. Mínimo 5 tablas, máximo razonable según complejidad del dominio.]
+
+## Vistas de soporte (opcional)
+[Vistas que sirven directamente al portal o a reportes operativos]
+
+## Estrategia de migraciones
+- Herramienta: [Liquibase / Alembic / Flyway según el stack del Paso 0]
+- Versionado: scripts incrementales en el repositorio del backend
+- Migraciones críticas conocidas: [referencia a riesgos del A9 que impliquen cambios de esquema]
+
+## Estimaciones de tamaño
+
+| Concepto | MVP | Escala 1 (10x) | Escala 2 (100x) |
+|---|---|---|---|
+| Filas en tabla principal/mes | ... | ... | ... |
+| Tamaño promedio por fila | ... | ... | ... |
+| Total estimado anual | ... | ... | ... |
+
+## Notas finales
+- [Cómo se garantiza cada principio del A1/A2 a nivel de BD]
+- [Indicaciones sobre cifrado, backup, particionamiento]
+```
+
+**Insumos requeridos del A15:**
+- ADRs del A10 que afectan persistencia → reflejados en los principios de diseño
+- Procesos del A3 → cada proceso con escritura/lectura debe tener su tabla
+- Máquina de estados de las entidades del A3 → CHECK constraints sobre la columna `state`
+- Supuestos del A1 sobre retención e idempotencia → constraints UNIQUE, triggers, lifecycle
+- RNFs de auditoría y trazabilidad del A2 → tablas de bitácora e historial
+- Componentes con dependencia de BD del A6 → confirman qué tablas son consumidas por cada servicio
+- Escala del Paso 0 → estimaciones de tamaño y recomendaciones de particionamiento
+
+---
+
+## Artefacto 16 — Plantilla de Historias de Usuario
+
+```markdown
+# [Nombre del Proyecto] — Historias de Usuario
+
+> **Formato:** *"Como [rol], quiero [capacidad], para [valor]"*
+> **Criterios de aceptación:** estructura **Dado / Cuando / Entonces** en español
+> **Versión:** 1.0
+
+## Convenciones
+- HU-XXX es el identificador único.
+- Mapeo a proceso del A3 cuando aplica.
+- Mapeo a sprint del A13.
+- Diagrama de origen del A7 y/o pantalla de origen del A8 cuando aplica.
+- Componentes del A5/A6 involucrados.
+- Sin estimación de story points (las estima el equipo en sprint planning).
+
+# Epic 1 — [Nombre del epic, ej. Cimientos]
+
+## HU-001 — [Título corto y verificable]
+
+**Como** [rol del A3 o del A12],
+**quiero** [capacidad funcional concreta],
+**para** [valor de negocio o técnico que aporta].
+
+**Mapeo a proceso A3:** P-XX
+**Mapeo a sprint A13:** Sprint N
+**Diagrama de origen:** seq_NN_[nombre] (si aplica)
+**Pantalla de origen:** Pantalla N — [nombre] (si aplica)
+**Componentes involucrados:** [N1, N2, D1, X1...]
+
+**Criterios de aceptación:**
+
+- **Dado** [contexto inicial], **cuando** [acción específica], **entonces** [resultado verificable].
+- **Dado** [otro contexto], **cuando** [acción], **entonces** [resultado].
+- [Mínimo 3 criterios, preferentemente 5-7 para historias complejas]
+
+[Repetir por cada historia del epic]
+
+# Epic 2 — [...]
+
+[...]
+
+# Resumen del backlog
+
+## Distribución por epic
+| Epic | Historias | Sprint(s) |
+|---|---|---|
+| Epic 1 | HU-001 a HU-XXX | Sprint N |
+| ... | ... | ... |
+
+## Distribución por rol
+[Tabla con cuántas historias tiene cada rol como protagonista]
+
+## Cobertura de procesos del A3
+[Verificar que todos los procesos del A3 estén cubiertos por al menos una historia, salvo los de soporte]
+
+## Notas para el backlog refinement
+- Historias críticas para arrancar
+- Historias bloqueadas por preguntas abiertas del A1
+- Historias dependientes de respuestas del cliente
+```
+
+**Insumos requeridos del A16:**
+- Procesos del A3 → cada proceso debe estar cubierto por al menos una historia
+- Pantallas del A8 → cada pantalla genera al menos una historia de uso
+- Diagramas de secuencia del A7 → cada seq_NN se referencia en la historia que lo materializa
+- Roles del A12 → fuente de los protagonistas de las historias
+- Sprints del A13 → mapeo explícito de cuándo se entrega cada historia
+- Riesgos del A9 → historias bloqueadas por riesgos críticos quedan marcadas
+- Preguntas abiertas del A1 → historias dependientes de respuestas del cliente quedan señaladas
+- ADRs del A10 → cuando una decisión arquitectónica tiene impacto en una historia (ej. "API Keys M2M" en la historia de webhook), se referencia

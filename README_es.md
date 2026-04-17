@@ -1,8 +1,10 @@
-# Cortex Skill: Architectural Analysis
+# Cortex Skill: Análisis Arquitectónico — v2
 
 [Versión en Inglés disponible aquí](README.md)
 
-Este skill genera un análisis funcional y arquitectónico completo para propuestas a clientes a partir de un documento de requerimientos o conversación. Está diseñado para transformar necesidades de negocio en artefactos técnicos y ejecutivos de alta calidad, siguiendo un flujo secuencial estricto. A sido probado con claude.ia / claudde code . Dependerá de las capcidades de cada agente la generación de artefactos como las infografías en HTML
+Este skill genera un análisis funcional y arquitectónico completo para propuestas a clientes a partir de un documento de requerimientos o conversación. Está diseñado para transformar necesidades de negocio en artefactos técnicos y ejecutivos de alta calidad, siguiendo un flujo secuencial estricto. Probado con claude.ai / Claude Code. La generación de artefactos como las infografías en HTML dependerá de las capacidades de cada agente.
+
+**v2 agrega:** A15 — Modelo de Datos Físico (generado entre A6 y A7) y A16 — Historias de Usuario (al final del Bloque C). Total: **16 artefactos · 16 micro-checkpoints · 2 gates de bloque · 1 gate inicial.**
 
 ## Estructura del Proyecto
 
@@ -41,6 +43,7 @@ graph TD
     
     subgraph "Bloque C (Técnico)"
         A6[A6: Arq. Contextual]
+        A15[A15: Modelo de Datos Físico]
         A7[A7: Secuencias Atómicas]
         A8[A8: Prototipos HTML]
         A9[A9: Riesgos]
@@ -49,6 +52,9 @@ graph TD
         A12[A12: Equipo]
         A13[A13: Sprints]
         A14[A14: RACI]
+        A16[A16: Historias de Usuario]
+        A6 --> A15 --> A7
+        A14 --> A16
     end
 ```
 
@@ -82,7 +88,9 @@ sequenceDiagram
         Note over S, U: BLOQUE C: Detalle Técnico
         S->>U: Activa PDA (Protocolo de Decisiones)
         U->>S: Confirma Decisiones Técnicas
-        S->>U: Genera A6-A14 (Especificación Técnica)
+        S->>U: Activa PDA — resuelve decisiones arquitectónicas una por una
+        U->>S: Confirma cada decisión
+        S->>U: Genera A6 → A15 → A7 → A8 → A9 → A10 → A11 → A12 → A13 → A14 → A16
     End
     
     S->>U: Entrega Empaquetado Final (.md, .html, .mmd)
@@ -90,10 +98,12 @@ sequenceDiagram
 
 ## Características Principales
 
-- **Propagación de Contexto**: El stack tecnológico y los nombres de componentes definidos inicialmente se mantienen idénticos en todos los artefactos.
-- **Protocolo de Decisiones Arquitectónicas (PDA)**: Antes de definir arquitectura técnica, se consultan trade-offs de cómputo, datos e integración.
-- **Atomicidad en Secuencias**: Los diagramas de secuencia se dividen en flujos mínimos verificables.
-- **Prototipado Derivado**: Las pantallas de UI se generan directamente de los pasos de los diagramas de secuencia.
+- **Propagación de Contexto**: El stack tecnológico y los nombres de componentes definidos inicialmente se mantienen idénticos en los 16 artefactos.
+- **Protocolo de Decisiones Arquitectónicas (PDA)**: Ante cada decisión técnica relevante se presentan opciones con costos y una recomendación explícita; ninguna decisión se registra sin confirmación del usuario.
+- **Modelo de Datos Físico (A15)**: DDL ejecutable + diagrama ER en Mermaid generados antes de las secuencias, para que los nombres de tabla sean reales en todo el Bloque C.
+- **Atomicidad en Secuencias**: Los diagramas de secuencia se dividen en flujos mínimos verificables (máx. 6 participantes, máx. 15 pasos por diagrama).
+- **Prototipado Derivado**: Las pantallas de UI se generan directamente de los pasos de los diagramas de secuencia, referenciando columnas reales del A15.
+- **Historias de Usuario (A16)**: Backlog completo agrupado en epics, con criterios de aceptación en formato Dado/Cuando/Entonces, mapeados a procesos del A3, secuencias del A7, pantallas del A8 y sprints del A13.
 
 ## Uso del Skill
 

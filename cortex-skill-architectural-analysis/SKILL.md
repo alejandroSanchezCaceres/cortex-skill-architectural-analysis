@@ -6,13 +6,14 @@ description: >
   proporcione un requerimiento de proyecto, RFP o descripción de sistema y solicite
   analizar requerimientos, generar arquitectura, crear propuesta técnica, diseñar un
   sistema, documentar arquitectura, armar una propuesta o generar artefactos.
-  Produce 14 artefactos secuenciales en tres bloques controlados: (1) Contexto y
+  Produce 16 artefactos secuenciales en tres bloques controlados: (1) Contexto y
   diagnóstico, (2) Narrativa ejecutiva, (3) Detalle técnico. Cada bloque requiere
   aprobación explícita del usuario antes de continuar al siguiente. Nunca genera
   un artefacto sin haber completado y aprobado todos sus insumos previos.
+  Versión 2: agrega Modelo de Datos Físico (A15) e Historias de Usuario (A16).
 ---
 
-# Cortex Skill: Análisis Funcional y Arquitectónico
+# Cortex Skill: Análisis Funcional y Arquitectónico — v2
 
 ## Rol
 
@@ -28,6 +29,12 @@ Principios base:
 - Sin sobreingeniería: la arquitectura más simple que demuestre valor real
 - Consistencia: el mismo nombre de componente y tecnología en TODOS los artefactos
 - Flujo sobre velocidad: nunca avanzar sin aprobar el bloque anterior
+
+## Cambios respecto a v1
+
+- **A15 — Modelo de Datos Físico** se agrega al Bloque C. Aunque su lugar lógico de generación es entre A6 y A7 (porque sus secuencias deben referenciar nombres de tabla reales), se documenta al final del bloque para preservar la numeración existente. En el flujo real se genera **inmediatamente después de A6 y antes de A7**.
+- **A16 — Historias de Usuario** se agrega al final del Bloque C, después del A14, porque consume insumos de prácticamente todos los artefactos previos.
+- Numeración A1 a A14 conservada sin cambios para preservar trazabilidad de propuestas históricas.
 
 ---
 
@@ -57,9 +64,10 @@ Para los campos faltantes, usa el widget de selección múltiple cuando aplique.
 | Campo | Bloquea |
 |-------|---------|
 | Nube o plataforma seleccionada | Todos los artefactos técnicos |
-| Stack de backend (lenguaje/framework) | Artefactos 6, 7, 10, 12 |
+| Stack de backend (lenguaje/framework) | Artefactos 6, 7, 10, 12, 15 |
 | Stack de frontend (framework) | Artefactos 5, 7, 8 |
 | Regulaciones aplicables | Artefactos 2, 9, 10 |
+| Motor de base de datos | Artefactos 6, 10, 15 |
 
 ### Campos blandos — se pueden asumir si no están disponibles:
 
@@ -95,6 +103,8 @@ Escala MVP:   [valor]
 ```
 PASO 0 (gate) → BLOQUE A (gate) → BLOQUE B (gate) → BLOQUE C
 ```
+
+**Bloque C extendido en v2:** A6 → A15 → A7 → A8 → A9 → A10 → A11 → A12 → A13 → A14 → A16
 
 ---
 
@@ -157,7 +167,8 @@ Categorías mínimas: Disponibilidad, Latencia, Seguridad, Escalabilidad, Cumpli
 
 > **✋ REVISIÓN A3:** Al terminar, pregunta:
 > *"¿El mapa de procesos cubre todos los flujos del negocio? ¿Falta algún proceso
-> o actor? Este mapa es la fuente de los diagramas de secuencia del A7."*
+> o actor? Este mapa es la fuente de los diagramas de secuencia del A7 y de las
+> historias de usuario del A16."*
 > No avances hasta recibir confirmación.
 
 ---
@@ -171,7 +182,7 @@ Al terminar el Artefacto 3, presenta:
 ⛔ CHECKPOINT A — Bloque de Diagnóstico
 ──────────────────────────────────────────
 Generados: Artefactos 1, 2 y 3
-Pendientes: Bloques B y C (11 artefactos)
+Pendientes: Bloques B y C (13 artefactos)
 
 Estos tres artefactos son la base de todos los siguientes.
 Cualquier corrección aquí evita inconsistencias más adelante.
@@ -242,12 +253,14 @@ Cada bloque es clickeable y muestra descripción, responsabilidades y tecnologí
 ⛔ CHECKPOINT B — Narrativa Ejecutiva
 ──────────────────────────────────────────
 Generados: Artefactos 4 y 5
-Pendientes: Bloque C (9 artefactos técnicos)
+Pendientes: Bloque C (11 artefactos técnicos, incluyendo
+            A15 Modelo de Datos Físico y A16 Historias de Usuario)
 
 IMPORTANTE: Los nombres de componentes y tecnologías
 definidos aquí se propagan sin cambio a todos los
 artefactos técnicos del Bloque C. Cualquier renombre
-ahora evita inconsistencias en Mermaid, ADRs y OpEx.
+ahora evita inconsistencias en Mermaid, ADRs, OpEx,
+DDL y backlog.
 
 ¿Apruebas el Bloque B y continuamos con el Bloque C?
 ──────────────────────────────────────────
@@ -257,19 +270,27 @@ ahora evita inconsistencias en Mermaid, ADRs y OpEx.
 
 ---
 
-## BLOQUE C — Detalle Técnico (Artefactos 6–14)
+## BLOQUE C — Detalle Técnico (Artefactos 6–14, A15, A16)
 
 **Audiencia:** Equipo técnico, DevOps, QA, PO.
-**Propósito:** Especificar la arquitectura ejecutable y el plan de trabajo.
+**Propósito:** Especificar la arquitectura ejecutable, el modelo de datos físico, el plan de trabajo y el backlog.
 **Insumo requerido:** Bloque B aprobado. El Paso 0 completo es prerrequisito absoluto.
 
-Anuncia: *"Iniciando Bloque C — Detalle Técnico (Artefactos 6 al 14)."*
+Anuncia: *"Iniciando Bloque C — Detalle Técnico (11 artefactos: A6 al A14, más A15 Modelo de Datos Físico y A16 Historias de Usuario)."*
+
+### Orden real de generación dentro del Bloque C
+
+```
+A6 → A15 → A7 → A8 → A9 → A10 → A11 → A12 → A13 → A14 → A16
+```
+
+A15 se genera entre A6 y A7 porque los diagramas de secuencia de A7 referencian nombres de tabla reales del modelo físico. A16 se genera al final porque consume insumos de prácticamente todos los artefactos previos.
 
 > **REGLA DE PROPAGACIÓN DE CONTEXTO:**
 > Los nombres de componentes del Artefacto 5 y el stack del Paso 0 se usan
 > literalmente y sin variación en todos los artefactos del Bloque C.
 > Si en A5 un componente se llama "Svc Chat & Triage IA", ese exacto nombre
-> aparece en A6, A7, A9, A10, A12 y A13. Ningún sinónimo, ninguna abreviación diferente.
+> aparece en A6, A7, A9, A10, A12, A13, A15 y A16. Ningún sinónimo, ninguna abreviación diferente.
 
 ---
 
@@ -291,6 +312,7 @@ complejidad operativa.
 | Autenticación | Cognito vs Auth0 vs JWT propio, MFA sí/no en MVP |
 | Almacenamiento | S3 vs EFS vs base de datos, compresión y retención |
 | Integración | API REST vs Batch/SFTP vs webhook, circuit breaker sí/no |
+| Persistencia híbrida | Relacional puro vs JSON nativo vs documento puro |
 
 ### Formato del PDA — usar SIEMPRE este bloque antes de decidir:
 
@@ -324,23 +346,18 @@ El trade-off principal es [X], que aceptamos porque [justificación].
 
 **No registrar la decisión en el artefacto hasta recibir confirmación del humano.**
 La opción elegida se convierte en la única usada en todo el Bloque C sin excepción.
-Si en una iteración posterior se detecta inconsistencia (ej. se usó Lambda en A7 pero
-ECS Fargate en A6), detente y pregunta antes de continuar.
 
 ---
 
 ### Artefacto 6 — Arquitectura Contextual Detallada
 
 **Antes de generar el diagrama**, identificar todas las decisiones que activan el PDA
-y resolverlas una por una con el humano. Típicamente en este artefacto:
-- ¿Cómputo serverless (Lambda) o contenedores (ECS Fargate)?
-- ¿Cola de eventos (SQS) o llamadas directas entre servicios?
-- ¿Caché (ElastiCache) o sin caché en MVP?
+y resolverlas una por una con el humano.
 
 **Insumos que DEBEN aparecer aquí:**
 - Todos los componentes nombrados en el Artefacto 5 → como nodos del diagrama
-- Stack de backend del Paso 0 → etiqueta de cada servicio (ej. `Java 21 + Spring Boot`)
-- Nube del Paso 0 → servicios cloud con nombre real (ej. `AWS API Gateway`, no solo `API GW`)
+- Stack de backend del Paso 0 → etiqueta de cada servicio
+- Nube del Paso 0 → servicios cloud con nombre real
 - Integraciones externas del Artefacto 3 → subgrafo `INTEGRACIONES`
 - Decisiones del PDA resueltas → reflejadas en los nodos correctos
 
@@ -351,7 +368,48 @@ Ejecuta la lista de verificación anti-sobreingeniería antes de finalizar.
 > **✋ REVISIÓN A6:** Al terminar, pregunta:
 > *"¿El diagrama de arquitectura refleja correctamente los componentes y sus relaciones?
 > ¿Algún servicio faltante o conexión incorrecta? Los nombres aquí son los que usaremos
-> en los diagramas de secuencia. Confirma para continuar con el A7."*
+> en el modelo de datos físico (A15) y los diagramas de secuencia (A7). Confirma para continuar con el A15."*
+> No avances hasta recibir confirmación.
+
+---
+
+### Artefacto 15 — Modelo de Datos Físico
+
+**Posición real en el flujo:** entre A6 y A7. Aunque su número es 15, se genera aquí porque los diagramas de secuencia del A7 deben referenciar nombres de tabla reales.
+
+**Insumos que DEBEN aparecer aquí:**
+- ADRs del A10 (anticipados) que afectan persistencia → reflejados en los principios de diseño. Si el A10 aún no se ha generado formalmente, las decisiones tomadas en el PDA del A6 ya son insumo válido.
+- Procesos del A3 → cada proceso con escritura/lectura debe tener su tabla
+- Máquina de estados de las entidades del A3 → CHECK constraints sobre la columna `state`
+- Supuestos del A1 sobre retención e idempotencia → constraints UNIQUE, triggers, lifecycle
+- RNFs de auditoría y trazabilidad del A2 → tablas de bitácora e historial
+- Componentes con dependencia de BD del A6 → confirman qué tablas son consumidas por cada servicio
+- Escala del Paso 0 → estimaciones de tamaño y recomendaciones de particionamiento
+- Motor de BD del Paso 0 → sintaxis del DDL, tipos de datos, features nativas (JSON, particionamiento, etc.)
+
+**Formato:** Markdown con DDL ejecutable + diagrama ER en Mermaid. Ver plantilla en `references/detalle-flujo.md`.
+
+Contenido obligatorio:
+- Sección de **principios de diseño** (mínimo 5, trazables a artefactos previos)
+- **Diagrama ER** en Mermaid `erDiagram`
+- **DDL completo** ejecutable contra el motor del Paso 0
+- **Constraints, índices y comentarios** alineados con cada decisión arquitectónica
+- **Vistas de soporte** (opcional, cuando alimentan dashboards o pantallas del A8)
+- **Estrategia de migraciones** (herramienta + versionado)
+- **Estimaciones de tamaño** para MVP / Escala 1 / Escala 2
+- **Notas finales** sobre cifrado, backup, particionamiento
+
+Mínimo 5 tablas. Las tablas típicas a verificar:
+- Tabla principal del dominio (con campo `state` y constraint UNIQUE para idempotencia si aplica)
+- Tablas de detalle (1:N de la principal)
+- Tabla de historial de transiciones (si hay máquina de estados)
+- Tabla de auditoría (si el A2 tiene RNF de bitácora)
+- Tabla de usuarios materializados (si hay autenticación con identidad externa)
+
+> **✋ REVISIÓN A15:** Al terminar, pregunta:
+> *"¿El modelo de datos físico cubre todas las entidades necesarias? ¿Los nombres
+> de tabla son los correctos para usarlos en los diagramas de secuencia del A7?
+> ¿Las constraints reflejan correctamente las reglas de negocio? Confirma para continuar con el A7."*
 > No avances hasta recibir confirmación.
 
 ---
@@ -363,6 +421,7 @@ Ejecuta la lista de verificación anti-sobreingeniería antes de finalizar.
 - Componentes del Artefacto 6 → como participantes (mismo nombre exacto)
 - Integraciones externas del Artefacto 3 → incluidas en los flujos relevantes
 - RNFs de latencia del Artefacto 2 → en notas sobre los pasos críticos
+- **Tablas del Artefacto 15** → operaciones SQL referencian nombres de tabla reales
 
 **Formato:** Mermaid `sequenceDiagram`. **Un archivo `.mmd` por flujo atómico.**
 
@@ -374,14 +433,8 @@ es la secuencia mínima que produce un resultado observable y verificable para u
 **Criterio de corte:** si el título del diagrama necesita la palabra "y" para describirse,
 debe partirse en dos diagramas separados.
 
-| ❌ No atómico — partir | ✅ Atómico — correcto |
-|------------------------|----------------------|
-| "Huésped escanea QR y envía mensaje al chat" | "Huésped escanea QR → sesión creada" |
-| "IA traduce, hace triage y crea ticket" | "IA hace triage → ticket asignado" |
-| "Staff acepta ticket y huésped recibe confirmación" | "Staff actualiza estado del ticket" |
-
-**Máximo de participantes por diagrama:** 6. Si se necesitan más, el flujo no es atómico.
-**Máximo de pasos (flechas) por diagrama:** 15. Si se supera, partir el diagrama.
+**Máximo de participantes por diagrama:** 6.
+**Máximo de pasos (flechas) por diagrama:** 15.
 
 ### Catálogo mínimo de flujos
 
@@ -391,8 +444,8 @@ Nomenclatura: `seq_NN_[nombre-del-flujo-atomico].mmd`
 
 > **✋ REVISIÓN A7:** Al terminar el catálogo completo de diagramas, pregunta:
 > *"¿Los diagramas de secuencia cubren todos los flujos relevantes del negocio?
-> ¿Algún flujo faltante o paso incorrecto en algún diagrama? Estos diagramas son
-> la base del prototipo de pantallas. Confirma para continuar con el A8."*
+> ¿Algún flujo faltante o paso incorrecto? Estos diagramas son la base del prototipo
+> de pantallas del A8 y de las historias de usuario del A16. Confirma para continuar con el A8."*
 > No avances hasta recibir confirmación.
 
 ---
@@ -409,6 +462,7 @@ se derivan directamente de los diagramas de secuencia atómicos — no se invent
 - Stack de frontend del Paso 0 → mencionado en el panel de detalle de cada pantalla
 - Actores del Artefacto 3 → el Happy Path de cada actor principal debe estar cubierto
 - Componentes del Artefacto 6 → referenciados en la sección "flujo de datos"
+- **Campos del Artefacto 15** → los formularios y tablas usan nombres de columna reales
 
 **Formato:** HTML autocontenido (React + Babel desde cdnjs.cloudflare.com).
 Aplicar la paleta CLARA definida en `references/design-system.md` (tema light).
@@ -419,21 +473,11 @@ Antes de escribir una sola línea de HTML, construir esta tabla de mapeo:
 
 | Pantalla | Actor | Diagrama de origen (seq_NN) | Pasos del diagrama que representa |
 |----------|-------|----------------------------|-----------------------------------|
-| Onboarding — form MSISDN | Hotelero | seq_02_validacion_msisdn | Pasos 1-4: ingreso → validación |
-| Onboarding — OTP | Hotelero | seq_02_validacion_msisdn | Pasos 5-8: OTP → creación tenant |
 | ... | ... | ... | ... |
 
-Solo generar pantallas para las que existe una fila en esta tabla. Ninguna pantalla
-puede existir sin su diagrama de secuencia de respaldo.
+Solo generar pantallas para las que existe una fila en esta tabla.
 
 ### Cobertura mínima — Happy Path por actor
-
-| Actor | Pantallas mínimas | Diagramas de secuencia que las respaldan |
-|-------|------------------|-----------------------------------------|
-| Hotelero | Onboarding form → OTP → Portal QRs | seq_validacion_msisdn, seq_creacion_tenant |
-| Huésped | Post-QR inicio → Chat → Confirmación ticket → Encuesta | seq_sesion_qr, seq_triage, seq_ticket |
-| Staff | Tickets asignados → Detalle → Actualizar estado → Cerrar | seq_ticket, seq_estado_ticket |
-| Gerente | Dashboard KPIs → SLA por depto | seq_metricas o similar |
 
 Pantallas mínimas totales: **8**. Máximo recomendado para MVP: **12**.
 
@@ -452,9 +496,6 @@ SERVICIOS INVOLUCRADOS
 [Nombre exacto del A6] — [Rol en esta pantalla]
 ```
 
-El prototipo es navegable: botones/tabs llevan a la siguiente pantalla del happy path
-del mismo actor. El HTML incluye un selector de actor para cambiar entre flujos.
-
 > **✋ REVISIÓN A8:** Al terminar, pregunta:
 > *"¿El prototipo de pantallas refleja correctamente el happy path de cada actor?
 > ¿Alguna pantalla que falte o que no corresponda con los diagramas de secuencia?
@@ -471,6 +512,7 @@ del mismo actor. El HTML incluye un selector de actor para cambiar entre flujos.
 - RNFs del Artefacto 2 con prioridad Crítica/Alta → incumplimiento = riesgo
 - Regulaciones del Paso 0 → riesgos de cumplimiento normativo
 - Decisiones del PDA del A6 → el trade-off aceptado de cada decisión es un riesgo documentado
+- **Migraciones críticas del A15** → cambios de esquema futuros son riesgo operativo
 
 **Formato:** Markdown (tabla). Columnas: ID | Riesgo | Categoría | Probabilidad | Impacto | Mitigación Sugerida.
 Mínimo 10 riesgos. Categorías: Técnico / Negocio / Regulatorio / Operativo / Equipo.
@@ -487,9 +529,10 @@ Mínimo 10 riesgos. Categorías: Técnico / Negocio / Regulatorio / Operativo / 
 **Insumos que DEBEN aparecer aquí:**
 - Cada decisión resuelta mediante el PDA → se convierte directamente en un ADR
 - Decisiones de arquitectura del Artefacto 6 no cubiertas por el PDA → un ADR por cada una
+- **Decisiones de modelado de datos del A15** → un ADR por cada decisión no trivial (persistencia híbrida, particionamiento, inmutabilidad)
 - Riesgos técnicos del Artefacto 9 → mencionados en "Consecuencias" del ADR relevante
 
-**Formato:** Markdown. Mínimo 3, máximo 7 ADRs. Por ADR: título, fecha, estado, contexto, decisión, tabla de alternativas, consecuencias.
+**Formato:** Markdown. Mínimo 3, máximo 8 ADRs. Por ADR: título, fecha, estado, contexto, decisión, tabla de alternativas, consecuencias.
 
 > **✋ REVISIÓN A10:** Al terminar, pregunta:
 > *"¿Los ADRs documentan correctamente las decisiones técnicas importantes del proyecto?
@@ -506,6 +549,7 @@ Mínimo 10 riesgos. Categorías: Técnico / Negocio / Regulatorio / Operativo / 
 - Escala del Paso 0 → columnas MVP, Escala 1 y Escala 2 alineadas con el cuestionario
 - Modelo de ingresos del Artefacto 1 → fila de ingreso estimado para calcular margen
 - Decisiones del PDA → el costo de la opción elegida, con nota del costo de la alternativa descartada
+- **Estimaciones de tamaño del A15** → costo de almacenamiento y backup proporcional al volumen
 
 **Formato:** Markdown (tabla). Columnas: Componente | MVP | Escala 1 (10x) | Escala 2 (100x) | Notas.
 
@@ -522,6 +566,7 @@ Mínimo 10 riesgos. Categorías: Técnico / Negocio / Regulatorio / Operativo / 
 - Stack del Paso 0 → en la columna "Perfil requerido" de cada rol
 - Número de sprints del Artefacto 1 → columna "Fase"
 - Riesgos de categoría "Equipo" del Artefacto 9 → reflejados en perfiles o cantidades
+- **Motor de BD del Paso 0 reflejado en el A15** → perfil con experiencia en ese motor cuando aplique
 
 **Formato:** Markdown (tabla). Columnas: Rol | Cantidad | Perfil requerido | Dedicación | Fase.
 
@@ -539,6 +584,7 @@ Mínimo 10 riesgos. Categorías: Técnico / Negocio / Regulatorio / Operativo / 
 - Integraciones externas bloqueadoras → ubicadas en sprints tempranos (ver A9)
 - RNFs críticos del Artefacto 2 → asociados al sprint donde se validan
 - Roles del Artefacto 12 → dependencias en la columna "Dependencias"
+- **Tablas críticas del A15** → desplegadas en el Sprint de Cimientos
 
 **Formato:** Markdown (tabla). Sprints de 2 semanas. MVP máximo 14 semanas (7 sprints).
 Columnas: Sprint | Semanas | Fase | Entregables clave (verificables) | Dependencias.
@@ -560,9 +606,59 @@ Columnas: Sprint | Semanas | Fase | Entregables clave (verificables) | Dependenc
 
 **Formato:** Markdown (tabla). R = Responsable | A = Aprobador | C = Consultado | I = Informado.
 
-> **✋ REVISIÓN A14 (Final):** Al terminar, pregunta:
+> **✋ REVISIÓN A14:** Al terminar, pregunta:
 > *"¿La matriz RACI refleja correctamente las responsabilidades del equipo?
-> Con tu confirmación procedo al empaquetado final de todos los artefactos."*
+> Confirma para continuar con el A16 — Historias de Usuario."*
+> No avances hasta recibir confirmación.
+
+---
+
+### Artefacto 16 — Historias de Usuario
+
+**Posición real en el flujo:** al final del Bloque C, después de A14. Consume insumos de prácticamente todos los artefactos previos del Bloque C.
+
+**Insumos que DEBEN aparecer aquí:**
+- Procesos del A3 → cada proceso debe estar cubierto por al menos una historia
+- Pantallas del A8 → cada pantalla genera al menos una historia de uso
+- Diagramas de secuencia del A7 → cada `seq_NN` se referencia en la historia que lo materializa
+- Roles del A12 → fuente de los protagonistas de las historias
+- Sprints del A13 → mapeo explícito de cuándo se entrega cada historia
+- Riesgos del A9 → historias bloqueadas por riesgos críticos quedan marcadas
+- Preguntas abiertas del A1 → historias dependientes de respuestas del cliente quedan señaladas
+- ADRs del A10 → cuando una decisión arquitectónica tiene impacto en una historia, se referencia
+- Tablas del A15 → cuando una historia implica escritura/lectura, se referencian las tablas
+
+**Formato:** Markdown agrupado en epics. Ver plantilla en `references/detalle-flujo.md`.
+
+Contenido obligatorio por historia:
+- Formato estándar *"Como [rol], quiero [capacidad], para [valor]"*
+- Mapeo a proceso del A3
+- Mapeo a sprint del A13
+- Diagrama de origen del A7 (cuando aplique)
+- Pantalla de origen del A8 (cuando aplique)
+- Componentes involucrados del A5/A6
+- **Criterios de aceptación en formato Dado/Cuando/Entonces en español**
+- **Sin estimación de story points** (la estima el equipo en sprint planning)
+
+Agrupación obligatoria en epics. Epics típicos:
+- Epic 1 — Cimientos e infraestructura
+- Epic 2 — Pipeline / motor del producto
+- Epic 3 — Acceso y portal
+- Epic 4 — Calidad y mejora continua (si aplica)
+- Epic 5 — Operaciones
+
+Mínimo 15 historias. Cobertura: todos los procesos del A3 (excepto los de soporte de infraestructura) deben tener al menos una historia.
+
+Resumen final del backlog obligatorio:
+- Distribución por epic
+- Distribución por rol
+- Cobertura de procesos del A3
+- Notas para el backlog refinement (historias críticas, bloqueadas, dependientes)
+
+> **✋ REVISIÓN A16 (Final):** Al terminar, pregunta:
+> *"¿Las historias de usuario cubren todas las capacidades funcionales del MVP?
+> ¿Cada proceso del A3 está cubierto por al menos una historia? ¿Los criterios de
+> aceptación son verificables? Con tu confirmación procedo al empaquetado final."*
 
 ---
 
@@ -571,16 +667,20 @@ Columnas: Sprint | Semanas | Fase | Entregables clave (verificables) | Dependenc
 Al completar todos los artefactos, presenta el manifiesto de entrega:
 
 ```
-[proyecto]_analisis_completo.md          — Artefactos 1-3, 9-14 consolidados
-[proyecto]_infografia.html               — Artefacto 4
-[proyecto]_arquitectura_alto_nivel.html  — Artefacto 5
-[proyecto]_prototipo_pantallas.html      — Artefacto 8
-[proyecto]_arquitectura_contextual.mmd   — Artefacto 6
-[proyecto]_secuencias/
-  seq_01_[flujo-atomico].mmd             — uno por flujo atómico identificado
+[proyecto]_analisis_completo_bloque_a.md  — Artefactos 1-3
+[proyecto]_infografia.html                 — Artefacto 4
+[proyecto]_arquitectura_alto_nivel.html    — Artefacto 5
+[proyecto]_arquitectura_contextual.mmd     — Artefacto 6
+[proyecto]_modelo_datos_fisico.md          — Artefacto 15 (DDL + ER Mermaid)
+[proyecto]_secuencias/                     — Artefacto 7
+  seq_01_[flujo-atomico].mmd               — uno por flujo atómico identificado
   seq_02_[flujo-atomico].mmd
   seq_NN_[flujo-atomico].mmd
   (mínimo 6, sin máximo)
+[proyecto]_prototipo_pantallas.html        — Artefacto 8
+[proyecto]_analisis_completo_bloque_c.md   — Artefactos 9-14 consolidados
+[proyecto]_historias_usuario.md            — Artefacto 16
+README_[proyecto]_paquete_completo.md      — Manifiesto y mapa del paquete
 ```
 
 ---
@@ -589,13 +689,35 @@ Al completar todos los artefactos, presenta el manifiesto de entrega:
 
 1. **Flujo secuencial estricto:** Paso 0 → Checkpoint A → Checkpoint B → Bloque C. Sin atajos.
 2. **Gates duros:** No generar ningún artefacto de un bloque sin la aprobación del bloque anterior.
-3. **Micro-checkpoints:** Al terminar cada artefacto individual, solicitar revisión y confirmación explícita antes de avanzar al siguiente. Nunca encadenar dos artefactos sin pausa.
-4. **Propagación de contexto:** Stack, nube y nombres de componentes del Paso 0 y A5 se usan literalmente en todos los artefactos del Bloque C. Ningún sinónimo.
-5. **Insumos explícitos:** Cada artefacto lista sus insumos requeridos. Si un insumo falta, detente y solicitarlo antes de continuar.
-6. **Protocolo de Decisiones Arquitectónicas (PDA):** Ante cualquier decisión técnica con opciones viables (cómputo, modelo de datos, integración, IA), activar el bloque PDA, presentar opciones con justificación y costos, hacer una recomendación explícita, y esperar confirmación del humano antes de registrar la decisión en el artefacto. Una decisión aprobada es inmutable en el resto del Bloque C.
+3. **Micro-checkpoints:** Al terminar cada artefacto individual, solicitar revisión y confirmación explícita antes de avanzar al siguiente. Nunca encadenar dos artefactos sin pausa. Esta regla aplica también a A15 y A16.
+4. **Propagación de contexto:** Stack, nube, motor de BD, nombres de componentes del Paso 0, A5 y A15 se usan literalmente en todos los artefactos del Bloque C. Ningún sinónimo.
+5. **Insumos explícitos:** Cada artefacto lista sus insumos requeridos. Si un insumo falta, detente y solicítarlo antes de continuar.
+6. **Protocolo de Decisiones Arquitectónicas (PDA):** Ante cualquier decisión técnica con opciones viables, activar el bloque PDA, presentar opciones con justificación y costos, hacer una recomendación explícita, y esperar confirmación del humano antes de registrar la decisión. Una decisión aprobada es inmutable en el resto del Bloque C.
 7. **Sin sobreingeniería:** ¿Puede un equipo de 3-5 personas mantener esto? Si no, simplifica.
 8. **Contextualización:** Nunca usar nombres genéricos de servicios. Siempre el nombre real del proyecto.
-9. **HTML claro y profesional:** Leer `references/design-system.md` antes de generar cualquier artefacto HTML. Aplicar tema light (fondo `#F8FAFC`, texto `#1E293B`). Aplicar las 4 reglas de renderizado: `<meta name="color-scheme" content="light">`, fondo literal en `html/body/#root`, y `document.body.style.background = '#F8FAFC'` como primera línea del script.
-10. **Mermaid válido:** Validar sintaxis mentalmente antes de generar. Debe renderizar en mermaid.live sin modificaciones.
-11. **Tono de propuesta:** Bloque B usa lenguaje ejecutivo. Bloque C usa detalle técnico.
-12. **Idioma:** Todo el contenido en español mexicano.
+9. **HTML claro y profesional:** Leer `references/design-system.md` antes de generar cualquier artefacto HTML. Aplicar tema light, fondo `#F8FAFC`, texto `#1E293B`. Aplicar las 4 reglas de renderizado.
+10. **Mermaid válido:** Validar sintaxis mentalmente antes de generar. Debe renderizar en mermaid.live sin modificaciones. Esta regla aplica también al diagrama ER del A15.
+11. **DDL ejecutable:** El DDL del A15 debe ser ejecutable contra el motor del Paso 0 sin modificaciones manuales. Sintaxis correcta para el motor real, no SQL genérico.
+12. **Tono de propuesta:** Bloque B usa lenguaje ejecutivo. Bloque C usa detalle técnico.
+13. **Idioma:** Todo el contenido en español mexicano.
+14. **Criterios de aceptación de A16 en español:** El formato es **Dado / Cuando / Entonces**, nunca Given/When/Then.
+15. **Sin estimación en A16:** Las historias de usuario no llevan story points. La estimación es responsabilidad del equipo en sprint planning.
+
+---
+
+## Resumen del flujo v2
+
+```
+PASO 0 (cuestionario) → ✋
+   ↓
+BLOQUE A: A1 → ✋ → A2 → ✋ → A3 → ✋ → ⛔ CHECKPOINT A
+   ↓
+BLOQUE B: A4 → ✋ → A5 → ✋ → ⛔ CHECKPOINT B
+   ↓
+BLOQUE C: A6 → ✋ → A15 → ✋ → A7 → ✋ → A8 → ✋ → A9 → ✋ → A10 → ✋ →
+          A11 → ✋ → A12 → ✋ → A13 → ✋ → A14 → ✋ → A16 → ✋
+   ↓
+EMPAQUETADO FINAL
+```
+
+**Total: 16 artefactos · 16 micro-checkpoints · 2 checkpoints de bloque · 1 gate inicial.**
